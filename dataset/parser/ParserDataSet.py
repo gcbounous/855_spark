@@ -66,6 +66,7 @@ def panamaPapers():
 		if(pattern.search(line["fieldname"]) is not None):
 			nomes.append(sanitize(line["text"]))
 	return nomes
+
 def odebrecht():
 	nomes = []
 	html = urlopen("http://m.congressoemfoco.uol.com.br/noticias/lista-da-odebrecht-os-politicos-e-seus-respectivos-partidos")
@@ -74,6 +75,7 @@ def odebrecht():
 	for nome in nomesTr[1:]:
 		nomes.append(sanitize(nome.string))
 	return nomes
+
 def acusadosCondenados():
 	nomes =[]
 	html = urlopen("http://www.contracorrupcao.org/2013/04/lista-da-corrupcao.html?m=1")
@@ -83,6 +85,7 @@ def acusadosCondenados():
 		if nome.div.span is not None:
 			nomes.append(sanitize(nome.div.span.string))
 	return nomes
+	
 def main():
 	nomes = dict()
 	nomes["lavaJato"] = lavaJato()
