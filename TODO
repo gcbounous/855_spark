@@ -1,0 +1,7 @@
+ParserDataSet:
+	- /!\ IMPORTANTE /!\ limpar lista para termos so politicos brasileiros (recuperar lista de politicos)
+		- verificar os politicos apenas aparecendo no panama-papers (0,1,0,0) 
+	- colocar politicos "ficha suja" 
+		- http://www.tcu.gov.br/contasirregulares/ResponsaveisContasJulgadasIrregularesEleicoes2014_Alfabetico.pdf
+		- http://www.brasil247.com/pt/247/brasilia247/144593/TCU-entrega-ao-TSE-lista-com-66-mil-fichas-sujas.htm
+	- arrumar nomes para que fiquem em formato padrao (sem salto de linha ou aspas)
