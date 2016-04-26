@@ -1,13 +1,10 @@
 ParserDataSet:
 	- /!\ IMPORTANTE /!\ limpar lista para termos so politicos brasileiros (recuperar lista de politicos)
 		- verificar os politicos apenas aparecendo no panama-papers (0,1,0,0)
-		- http://www.camara.leg.br/internet/deputado/Dep_Lista.asp?Legislatura=55&Partido=QQ&SX=QQ&Todos=None&UF=QQ&condic=QQ&forma=lista&nome=&ordem=nome&origem=None
-		- http://www.stf.jus.br/portal/cms/verTexto.asp?servico=sobreStfComposicaoComposicaoPlenariaApresentacao
-		- http://www2.planalto.gov.br/presidencia/ministros
-		- https://www25.senado.leg.br/web/senadores/em-exercicio
 
 	- colocar politicos "ficha suja" 
 		- http://www.tcu.gov.br/contasirregulares/ResponsaveisContasJulgadasIrregularesEleicoes2014_Alfabetico.pdf
 		- http://www.brasil247.com/pt/247/brasilia247/144593/TCU-entrega-ao-TSE-lista-com-66-mil-fichas-sujas.htm
 
 	- arrumar nomes para que fiquem em formato padrao (sem salto de linha ou aspas)
+		-ou verificar se os mesmos fazendo .upper().split()
