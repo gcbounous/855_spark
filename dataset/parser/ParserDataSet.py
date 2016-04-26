@@ -1,4 +1,5 @@
-#coding: utf-8
+#! /usr/bin/python2.7
+# -*- coding:utf-8 -*
 
 from urllib2 import urlopen
 import bs4 as BeautifulSoup
@@ -82,8 +83,8 @@ def adicionarIdEAmigos(lista):
 
 	# para nao passar do rate limit
 	# fazer controle de tempo para o rate limit a cada 15min
-	#	- /friends/ids (max 15)
-	# 	- /users/search (max180)
+	#	- /friends/ids (max 15)		|
+	# 	- /users/search (max180)	| => alors on doit se limiter a 15 requests/15min 
 	max_rate_limit = 0
 
 	for key, values in lista.iteritems():
@@ -119,7 +120,7 @@ def sanitize(toto):
 
 def lavaJato():
 	nomes = []
-	with open('lavaJato.html','r') as f:
+	with open('./fontes/lavaJato.html','r') as f:
 		html = f.read()
 		soup = BeautifulSoup.BeautifulSoup(html, 'html.parser')
 		alvos = soup.find_all('div',class_='alvo')
