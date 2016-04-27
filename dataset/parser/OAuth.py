@@ -11,9 +11,10 @@ access_secret = '00KKLiK1yi9rHYfhdqWKdJBLr3yyVrWUSrN8OgRMz1AT4'
  
 auth = OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
- 
-api = tweepy.API(auth)
 
-# public_tweets = api.home_timeline()
-# for tweet in public_tweets:
-#     print( tweet.text)
+api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify = True)
+
+
+# controle de tempo para o rate limit feito pelo wait_on_rate_limit
+# 	- /friends/ids (max 15)		|
+# 	- /users/search (max180)	| => alors on doit se limiter a 15 requests/15min 

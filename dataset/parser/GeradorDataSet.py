@@ -2,13 +2,10 @@
 # -*- coding:utf-8 -*
 
 import ParserPoliticosBrasilia
-from urllib2 import urlopen
-import bs4 as BeautifulSoup
+import OAuth
 import csv
 import unicodedata
-import re
 from fuzzywuzzy import fuzz
-import OAuth
 import json
 
 # melhorar funcao para ter certeza de pegar o politico buscado
@@ -44,23 +41,10 @@ def adicionarIdEAmigos(lista):
 		- param lista : Um dicionario de listas com key: nome do politico; value: lista de booleans ["lavaJato","panamaPapers","odebrecht","acusadosCondenados"]
 		- return lista : lista reorganizada
 	"""
-	print("length: {0}".format(len(lista)))
-
-	# para nao passar do rate limit
-	# fazer controle de tempo para o rate limit a cada 15min
-	#	- /friends/ids (max 15)		|
-	# 	- /users/search (max180)	| => alors on doit se limiter a 15 requests/15min 
-	max_rate_limit = 0
 
 	for key, values in lista.iteritems():
-
-		# if max_rate_limit == 1:
-		# 	break
-		# else:
-		# 	max_rate_limit+=1
-
-		# user = getTwitterUser(key)
-		user = -1
+		user = getTwitterUser(key)
+		# user = -1
 		if user == -1:
 			user_id = -1
 			lista_amigos = []
@@ -77,7 +61,6 @@ def adicionarIdEAmigos(lista):
 		values.append(temp1)
 
 		values.append(lista_amigos)		
-
 	return lista
 
 def convertToUnicode(text): 
