@@ -1,6 +1,7 @@
 ## Parser
 
 A parser to extract data from html and cvs files, and from Twitter.
+
 To renitialize the data run: python GeradorDataSet.py
 
 ### Dependencies 
