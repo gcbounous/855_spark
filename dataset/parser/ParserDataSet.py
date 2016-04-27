@@ -1,7 +1,7 @@
 #! /usr/bin/python2.7
 # -*- coding:utf-8 -*
 
-import ParserPoliticosBrasilia as politicos_br
+import ParserPoliticosBrasilia
 from urllib2 import urlopen
 import bs4 as BeautifulSoup
 import csv
@@ -54,12 +54,13 @@ def adicionarIdEAmigos(lista):
 
 	for key, values in lista.iteritems():
 
-		if max_rate_limit == 1:
-			break
-		else:
-			max_rate_limit+=1
+		# if max_rate_limit == 1:
+		# 	break
+		# else:
+		# 	max_rate_limit+=1
 
-		user = getTwitterUser(key)
+		# user = getTwitterUser(key)
+		user = -1
 		if user == -1:
 			user_id = -1
 			lista_amigos = []
@@ -79,7 +80,7 @@ def adicionarIdEAmigos(lista):
 
 	return lista
 
-def myfunction(text): # WTF?!?! Ça serait cool de comprendre ce que tu ecris. ;)
+def convertToUnicode(text): 
     try:
         text = unicode(text, 'utf-8')
     except TypeError:
@@ -100,9 +101,9 @@ def fazerLista(listas):
 	e = 0
 	for nomeListe in ["lavaJato","panamaPapers","odebrecht","acusadosCondenados"]:
 		for nome in listas[nomeListe]:
-			temp2 = unicodedata.normalize('NFD', myfunction(nome.upper())).encode('ascii', 'ignore')
+			temp2 = unicodedata.normalize('NFD', convertToUnicode(nome.upper())).encode('ascii', 'ignore')
 			for tempNome,liste in nomes.iteritems():
-				temp1 = unicodedata.normalize('NFD', myfunction(tempNome)).encode('ascii', 'ignore')
+				temp1 = unicodedata.normalize('NFD', convertToUnicode(tempNome)).encode('ascii', 'ignore')
 				if(fuzz.ratio(temp1,temp2)>80):
 					found = True
 					liste[i] = 1
@@ -116,17 +117,10 @@ def fazerLista(listas):
 	return nomes
 	
 def main():
-	nomes = politicos_br.getPoliticosCorruptos()
-	# nomes = dict()
-	# nomes["lavaJato"] = politicos_br.lavaJato()
-	# nomes["panamaPapers"] = politicos_br.panamaPapers()
-	# nomes["odebrecht"] = politicos_br.odebrecht()
-	# nomes["acusadosCondenados"] = politicos_br.acusadosCondenados()
-
-	print nomes
-	# lista = fazerLista(nomes)	
-	# lista = adicionarIdEAmigos(lista)
-	# criarCSV(lista)
+	nomes = ParserPoliticosBrasilia.getPoliticosCorruptos()
+	
+	lista = adicionarIdEAmigos(fazerLista(nomes))
+	criarCSV(lista)
 
 	print "done"
 
