@@ -1,6 +1,8 @@
 ## Parser
 
-A parser to extract data from three files html, a csv and Twitter
+A parser to extract data from html and cvs files, and from Twitter.
+
+To renitialize the data run: python GeradorDataSet.py
 
 ### Dependencies 
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/)
