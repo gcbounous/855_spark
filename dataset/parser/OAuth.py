@@ -3,6 +3,7 @@
 
 import tweepy
 from tweepy import OAuthHandler
+import json
  
 consumer_key = '2sMf8cVSQ7E23SaY9nROPRgAq'
 consumer_secret = 'W7wwom2Nh7EdguMBLRQo9F1hEeRGobhFeM6bObixtDGNNhRtfa'
@@ -12,9 +13,4 @@ access_secret = '00KKLiK1yi9rHYfhdqWKdJBLr3yyVrWUSrN8OgRMz1AT4'
 auth = OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
 
-api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify = True)
-
-
-# controle de tempo para o rate limit feito pelo wait_on_rate_limit
-# 	- /friends/ids (max 15)		|
-# 	- /users/search (max180)	| => alors on doit se limiter a 15 requests/15min 
+api = tweepy.API(auth)

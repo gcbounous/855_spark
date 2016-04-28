@@ -7,8 +7,10 @@ import csv
 import unicodedata
 from fuzzywuzzy import fuzz
 import json
+import time
+import tweepy
 
-# melhorar funcao para ter certeza de pegar o politico buscado
+# melhorar funcao para ter certeza de pegar o politico buscado (buscar palavras como dep deputado senador ministro)
 def getTwitterUser(query):
 	"""
 	Faz a busca de usuarios por uma query e pega o primeiro (o mais relevante)
@@ -41,16 +43,34 @@ def adicionarIdEAmigos(lista):
 		- param lista : Um dicionario de listas com key: nome do politico; value: lista de booleans ["lavaJato","panamaPapers","odebrecht","acusadosCondenados"]
 		- return lista : lista reorganizada
 	"""
-
+	count = 0;
 	for key, values in lista.iteritems():
 		user = getTwitterUser(key)
+		lista_amigos = []
+
 		# user = -1
 		if user == -1:
 			user_id = -1
-			lista_amigos = []
 		else:
 			user_id = user["id"]
-			lista_amigos = getTwitterUsersFriends(user_id)			
+
+			try:
+				lista_amigos = getTwitterUsersFriends(user_id)
+			except tweepy.error.TweepError as e:
+				# Rate limit error
+				if e.message == [{u'message': u'Rate limit exceeded', u'code': 88}]:
+					print("Rate Limit Reached: devemos esperar 15min para continuar.")
+					espera = 0
+					# Esperamos 15min para relançar
+					for i in xrange(0,15):
+						espera += 1
+						time.sleep(60)
+						if espera%5 == 0:
+							print("Faltam {}min".format(15-espera))
+					lista_amigos = getTwitterUsersFriends(user_id)	
+				# No permission to access friends 
+				else:
+					print("Failed to run the command on that user, no permission.")
 
 		temp1 = values[0]
 		values[0] = user_id
@@ -60,7 +80,11 @@ def adicionarIdEAmigos(lista):
 			temp1 = temp2
 		values.append(temp1)
 
-		values.append(lista_amigos)		
+		values.append(lista_amigos)
+
+		count+=1
+		print("\n{}: {} done!".format(count,key))
+		# time.sleep(60)	
 	return lista
 
 def convertToUnicode(text): 
@@ -109,3 +133,11 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+
+	# user = getTwitterUser("eduardo cunha")
+	# getTwitterUsersFriends(user["id"])
+	# jason = OAuth.api.rate_limit_status()
+	# printTwitterUserJson(jason)
+	# print jason["resources"][u"friends"][u"/friends/ids"]
+		
