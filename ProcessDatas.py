@@ -1,11 +1,15 @@
 import csv
 # import matplotlib.pyplot as plt
+import sys
 import runConsoleMain 
 from StringIO import StringIO
 from datetime import datetime
 from collections import namedtuple
 from operator import add, itemgetter
 from pyspark import SparkConf, SparkContext
+
+sys.path.insert(0, 'dataset/parser')
+import GeradorDataSet
 
 ## Module Constants
 APP_NAME = "Social Corruption"
@@ -86,14 +90,56 @@ def run(sc):
     # for el,vl in result.iteritems():
     #     print el,vl
 
-def process():
-    # Configure Spark
+def confSpark():
     conf = SparkConf().setMaster("local[*]")
     conf = conf.setAppName(APP_NAME)
     sc   = SparkContext(conf=conf)
+
+def process():
+    # Configure Spark
+
     # Execute Main functionality
     return run(sc)
 
-if __name__ == "__main__":
+def alreadyExist(name):
+
+def getAndAdd(name):
+    user = GeradorDataSet.getTwitterUser(name)
+    if user == -1:
+        user_id = -1
+    else:
+        user_id = user["id"]
+        try:
+            lista_amigos = GeradorDataSet.getTwitterUsersFriends(user_id)
+        except tweepy.error.TweepError as e:
+            # Rate limit error
+            if e.message == [{u'message': u'Rate limit exceeded', u'code': 88}]:
+                print("Rate Limit Reached: devemos esperar 15min para continuar.")
+                espera = 0
+                # Esperamos 15min para relançar
+                for i in xrange(0,15):
+                    espera += 1
+                    time.sleep(60)
+                    if espera%5 == 0:
+                        print("Faltam {}min".format(15-espera))
+            lista_amigos = getTwitterUsersFriends(user_id)
+            else:
+                print("Failed to run the command on that user, no permission.")
+            c = csv.writer(open("dataset/parser/corrupcao.csv", "wb"))
+            c.writerow(name,user_id,"0","0","0","0",lista_amigos)
+    return user_id
+
+def main():
+    confSpark()
     dictionary = process()
-    runConsoleMain.consoleMain(dictionary)
+    while True:
+        chewie = runConsoleMain.consoleMain(dictionary)
+        if chewie != "chewbacca":
+            break
+        newId = getAndAdd(chewie)
+        if newId != -1:
+            dictionary = process()
+
+
+if __name__ == "__main__":
+    
