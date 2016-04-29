@@ -1,6 +1,6 @@
 import csv
 # import matplotlib.pyplot as plt
-
+import runConsoleMain 
 from StringIO import StringIO
 from datetime import datetime
 from collections import namedtuple
@@ -63,7 +63,7 @@ def coefficient(corrupt, listCorrupt):
     else:
         coefficient = float(-1)
     corruption += coefficient*coefficient3
-    return (corrupt.Nome,corrupt.lavaJato,corrupt.panamaPapers,corrupt.odebrecht,corrupt.acusadosCondenados,corrupt.numberList,len(corrupt.listaDeAmigos),numero,coefficient,corruption)
+    return {"nome":corrupt.Nome,"lavaJato":corrupt.lavaJato,"panamaPapers":corrupt.panamaPapers,"odebrecht":corrupt.odebrecht,"acusadosCondenados":corrupt.acusadosCondenados,"numberList":corrupt.numberList,"numeroAmigos":len(corrupt.listaDeAmigos),"numeroAmigosSujos":numero,"coefficientAmigosSujos":coefficient,"coefficientCorruption":corruption}
 def split(line):
     """
     Operator function for splitting a line with csv module
@@ -82,8 +82,6 @@ def run(sc):
     result = dict()
     for el,val in coef:
         result[el] = val
-    for el,val in result.iteritems():
-        print el,val
     return result
     # for el,vl in result.iteritems():
     #     print el,vl
@@ -95,3 +93,7 @@ def process():
     sc   = SparkContext(conf=conf)
     # Execute Main functionality
     return run(sc)
+
+if __name__ == "__main__":
+    dictionary = process()
+    runConsoleMain.consoleMain(dictionary)
