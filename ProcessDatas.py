@@ -1,3 +1,4 @@
+#coding: utf-8
 import csv
 # import matplotlib.pyplot as plt
 import sys
@@ -101,8 +102,6 @@ def process():
     # Execute Main functionality
     return run(sc)
 
-def alreadyExist(name):
-
 def getAndAdd(name):
     user = GeradorDataSet.getTwitterUser(name)
     if user == -1:
@@ -122,7 +121,6 @@ def getAndAdd(name):
                     time.sleep(60)
                     if espera%5 == 0:
                         print("Faltam {}min".format(15-espera))
-            lista_amigos = getTwitterUsersFriends(user_id)
             else:
                 print("Failed to run the command on that user, no permission.")
             c = csv.writer(open("dataset/parser/corrupcao.csv", "wb"))
@@ -142,4 +140,4 @@ def main():
 
 
 if __name__ == "__main__":
-    
+    main()
