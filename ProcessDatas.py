@@ -1,6 +1,6 @@
 import csv
 # import matplotlib.pyplot as plt
-import runConsoleMain 
+import RunConsoleMain 
 from StringIO import StringIO
 from datetime import datetime
 from collections import namedtuple
@@ -96,4 +96,4 @@ def process():
 
 if __name__ == "__main__":
     dictionary = process()
-    runConsoleMain.consoleMain(dictionary)
+    RunConsoleMain.consoleMain(dictionary)
