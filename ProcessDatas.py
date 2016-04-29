@@ -1,8 +1,9 @@
 #coding: utf-8
 import csv
 # import matplotlib.pyplot as plt
+
+import RunConsoleMain 
 import sys
-import runConsoleMain 
 from StringIO import StringIO
 from datetime import datetime
 from collections import namedtuple
@@ -26,9 +27,11 @@ def parse2(row):
     row[0] = int(row[1])
     row[1] = int(row[2])+int(row[3])+int(row[4])+int(row[5])
     return Couple(*row[:2])
+    
 def makeTuple(corrupt, listCorrupt):
     if corrupt is not None:
         return corrupt.id, coefficient(corrupt,listCorrupt)
+
 def parseAll(row):
     newR = [0]*8
     try:
@@ -52,6 +55,7 @@ def parseAll(row):
         return Person(*newR[:8])
     except ValueError:
         print "DAFUCK"
+
 def coefficient(corrupt, listCorrupt):
     coefficient1 = 300
     coefficient2 = 20
@@ -69,6 +73,7 @@ def coefficient(corrupt, listCorrupt):
         coefficient = float(-1)
     corruption += coefficient*coefficient3
     return {"nome":corrupt.Nome,"lavaJato":corrupt.lavaJato,"panamaPapers":corrupt.panamaPapers,"odebrecht":corrupt.odebrecht,"acusadosCondenados":corrupt.acusadosCondenados,"numberList":corrupt.numberList,"numeroAmigos":len(corrupt.listaDeAmigos),"numeroAmigosSujos":numero,"coefficientAmigosSujos":coefficient,"coefficientCorruption":corruption}
+
 def split(line):
     """
     Operator function for splitting a line with csv module
@@ -131,7 +136,7 @@ def main():
     confSpark()
     dictionary = process()
     while True:
-        chewie = runConsoleMain.consoleMain(dictionary)
+        chewie = RunConsoleMain.consoleMain(dictionary)
         if chewie != "chewbacca":
             break
         newId = getAndAdd(chewie)
@@ -141,3 +146,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
