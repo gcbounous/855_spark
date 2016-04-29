@@ -1,11 +1,11 @@
 #! /usr/bin/python2.7
 # -*- coding:utf-8 -*
-
+import sys
 from fuzzywuzzy import fuzz
 
 def imprimirPolitico(id, politico):
+	print politico
 	perfil_pol = "{0} ({1}): coef. corrupçao = {2} | id = {3} | ".format(politico["nome"],politico["ranking"], politico["coefficientCorruption"], id)
-	
 	perfil_pol +="denuncias: "
 	if(politico["lavaJato"]):
 		perfil_pol += " Lava Jato,"
@@ -20,25 +20,25 @@ def imprimirPolitico(id, politico):
 	print perfil_pol
 
 # Melhorar comparaçao (usar fuzzy)
-def buscaPorNome(dic_politicos):
-	nome = input()
+def buscaPorNome(dic_politicos,nome = None):
+	dic_politicos = calcularRanking(dic_politicos)
 	nome_achado =  False
-	if nome.isalpha():
-		for id, dic in dic_politicos.items():
-			if fuzz.ratio(nome.upper(),dic.nome.upper()) > 80:
-				imprimirPolitico(id, dic)
+	if nome is not None and nome.isalpha():
+		for key, value in dic_politicos.items():
+			if fuzz.ratio(nome.upper(),value.nome.upper()) > 80:
+				print value
+				imprimirPolitico(key, value)
 				nome_achado = True
 				break
-	else:
-		return False
-
-	if nome_achado:
-		return False
-	else:
-		return nome
+	elif nome is None:
+		for key,value in dic_politicos.items():
+			print value
+			imprimirPolitico(key,value)
+			nome_achado = True
+	return nome_achado
 
 def rankingCompleto(dic_politicos):
-
+	print "aqui"
 	for id in enumerate(dic_politicos["rankingCompleto"], start = 1):
 		imprimirPolitico(id, dic_politicos[id])
 
@@ -66,16 +66,15 @@ def calcularRanking(dic_politicos):
 		dic_politicos[tupla[0]]["ranking"] = i
 	# adicionamos o ranking geral no dicionario dos politicos
 	dic_politicos["rankingGeral"] = lista_id_coef
-
 	return dic_politicos
 
 def imprimeMenuPrincipal():
 	menu = "Escolha um modo para ver a corrupçao em Brasilia: "
-	menu += "1) Buscar por nome \n2) Ver ranking completo \n3) Por denuncia \n4) Sair"
+	menu += "\n1) Buscar por nome \n2) Ver ranking completo \n3) Por denuncia \n4) Sair"
 	print(menu)
 
 def imprimeMenuListas():
-	menu = "Escolha denuncia: "
+	menu = "Escolha denuncia:\n "
 	menu += "1) Lava Jato \n2) Odrebrech \n3) Panama Papers \n4) Acusados que foram condenados"
 
 def consoleMain(dic_politicos, id = 0):
@@ -94,8 +93,6 @@ def consoleMain(dic_politicos, id = 0):
 		pass
 	else:
 		imprimirPolitico(id, dic_politicos[id])
-
-
 	while True:
 		dic_menu = {
 			1: buscaPorNome,
@@ -106,8 +103,8 @@ def consoleMain(dic_politicos, id = 0):
 
 		menu_ok = False
 		while not menu_ok:
-			imprimerMenu()
-			menu = input()
+			imprimeMenuPrincipal()
+			print menu
 			try:
 				menu = int(menu)
 				assert (menu > 0 and menu <= 4)
@@ -117,12 +114,13 @@ def consoleMain(dic_politicos, id = 0):
 				print("*** Escolha um numero dentre as opçoes ***")
 			else:
 				menu_ok = True
-
+		print dic_menu[menu]
 		function = dic_menu[menu]
 		sortir = function(dic_politicos)
 
 		if sortir != False:
-			return sortir	
+			return sortir
 
 if __name__ == "__main__":
-	consoleMain()
+	dic = dict()
+	consoleMain(dic)

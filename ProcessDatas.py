@@ -9,6 +9,7 @@ from datetime import datetime
 from collections import namedtuple
 from operator import add, itemgetter
 from pyspark import SparkConf, SparkContext
+from fuzzywuzzy import fuzz
 
 sys.path.insert(0, 'dataset/parser')
 import GeradorDataSet
@@ -70,7 +71,7 @@ def coefficient(corrupt, listCorrupt):
     if len(corrupt.listaDeAmigos) > 0:
         coefficient = float(numero)/float(len(corrupt.listaDeAmigos))*100
     else:
-        coefficient = float(-1)
+        coefficient = 0
     corruption += coefficient*coefficient3
     return {"nome":corrupt.Nome,"lavaJato":corrupt.lavaJato,"panamaPapers":corrupt.panamaPapers,"odebrecht":corrupt.odebrecht,"acusadosCondenados":corrupt.acusadosCondenados,"numberList":corrupt.numberList,"numeroAmigos":len(corrupt.listaDeAmigos),"numeroAmigosSujos":numero,"coefficientAmigosSujos":coefficient,"coefficientCorruption":corruption}
 
@@ -100,8 +101,9 @@ def confSpark():
     conf = SparkConf().setMaster("local[*]")
     conf = conf.setAppName(APP_NAME)
     sc   = SparkContext(conf=conf)
+    return sc
 
-def process():
+def process(sc):
     # Configure Spark
 
     # Execute Main functionality
@@ -132,17 +134,63 @@ def getAndAdd(name):
             c.writerow(name,user_id,"0","0","0","0",lista_amigos)
     return user_id
 
-def main():
-    confSpark()
-    dictionary = process()
-    while True:
-        chewie = RunConsoleMain.consoleMain(dictionary)
-        if chewie != "chewbacca":
-            break
-        newId = getAndAdd(chewie)
+def add(name):
+        newId = getAndAdd(name)
         if newId != -1:
-            dictionary = process()
+            dictionary = process(sc)
+def main():
+    name = "DILMA ROUSSEF"
+    sc = confSpark()
+    dictionary = process(sc)
+    printAll(dictionary)
+    print "\n\n\n"
+    ret = buscaPorNome(dictionary,name)
+    if not ret:
+        getAndAdd(name)
+        buscaPorNome(dictionary,name)
 
+def buscaPorNome(dic_politicos,nome):
+    dic_politicos = calcularRanking(dic_politicos)[0]
+    nome_achado =  False
+    for key, value in dic_politicos.iteritems():
+        if fuzz.ratio(nome.upper(),value["nome"].upper()) > 80:
+            printOne(value)
+            nome_achado = True
+            break
+    return nome_achado
+
+def printAll(dico):
+    dico,lista_id_coef= calcularRanking(dico)
+    for key,val in lista_id_coef:
+        printOne(dico[key])
+def numeroLista(dico):
+    value = 0
+    if(dico["lavaJato"]):
+        value += 1
+    if(dico["odebrecht"]):
+        value+=1
+    if(dico["panamaPapers"]):
+        value+=1
+    if(dico["acusadosCondenados"]):
+        value += 1
+    return value
+def printOne(dicoOne):
+    liste = numeroLista(dicoOne)
+    print dicoOne["nome"].ljust(22,' ')+" ("+str(dicoOne["ranking"])+") - Amigos "+str(dicoOne["numeroAmigos"]).ljust(6,' ')+" \t- A Sujos "+str(dicoOne["numeroAmigosSujos"]).ljust(5,' ')+" \t- Coef A S "+str(dicoOne["coefficientAmigosSujos"]).ljust(15,' ')+" \t - numero de Lista "+str(liste).ljust(3,' ')+"- Coef corrupcao "+str(dicoOne["coefficientCorruption"])
+
+def calcularRanking(dic_politicos):
+    lista_id_coef = []
+    # copia os ids e coeficientes em uma lista
+    for id, dic in dic_politicos.items():
+        t = (id, dic["coefficientCorruption"])
+        lista_id_coef.append(t)
+    # ordena lista pelos coeficiente
+    lista_id_coef = sorted(lista_id_coef, reverse = True, key = lambda tupla : tupla[1])
+    # insere ranking no dicionario
+    for i, tupla in enumerate(lista_id_coef, start = 1):
+        dic_politicos[tupla[0]]["ranking"] = i
+    # adicionamos o ranking geral no dicionario dos politicos
+    return dic_politicos,lista_id_coef
 
 if __name__ == "__main__":
     main()

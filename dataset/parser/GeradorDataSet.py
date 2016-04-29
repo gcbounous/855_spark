@@ -132,12 +132,13 @@ def main():
 	print "done"
 
 if __name__ == '__main__':
-	main()
+	# main()
 
 
-	# user = getTwitterUser("eduardo cunha")
-	# getTwitterUsersFriends(user["id"])
+	user = getTwitterUser("michel temer")
+	lista = getTwitterUsersFriends(user["id"])
 	# jason = OAuth.api.rate_limit_status()
-	# printTwitterUserJson(jason)
+	print "id: ",user["id"]
+	print lista
 	# print jason["resources"][u"friends"][u"/friends/ids"]
 		
