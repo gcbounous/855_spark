@@ -22,13 +22,20 @@ def imprimirPolitico(id, politico):
 # Melhorar comparaçao (usar fuzzy)
 def buscaPorNome(dic_politicos):
 	nome = input()
+	nome_achado =  False
+	if nome.isalpha():
+		for id, dic in dic_politicos.items():
+			if fuzz.ratio(nome.upper(),dic.nome.upper()) > 80:
+				imprimirPolitico(id, dic)
+				nome_achado = True
+				break
+	else:
+		return False
 
-	for id, dic in dic_politicos.items():
-		if fuzz.ratio(nome.upper(),dic.nome.upper())>80:
-			imprimirPolitico(id, dic)
-			break
-
-	return False
+	if nome_achado:
+		return False
+	else:
+		return nome
 
 def rankingCompleto(dic_politicos):
 
@@ -42,7 +49,7 @@ def buscaPorDenuncia(dic_politicos):
 	return False
 
 def sair():
-	return True
+	return "chewbacca"
 
 
 # TESTAR!!
@@ -71,37 +78,51 @@ def imprimeMenuListas():
 	menu = "Escolha denuncia: "
 	menu += "1) Lava Jato \n2) Odrebrech \n3) Panama Papers \n4) Acusados que foram condenados"
 
-def consoleMain(dic_politicos):
+def consoleMain(dic_politicos, id = 0):
 	"""
 		Fonction qui traite les options du menu principale
+		-param dic_politicos: dicionario com todos os politicos
+		-param id: id do politico a ser impresso/ se -1 politico nao achado/ se 0 menu inicial
 		-return sortir si vrai le jeu s'arrete
 	"""
-	dic_menu = {
-		1: buscaPorNome,
-		2: rankingCompleto,
-		3: buscaPorDenuncia,
-		4: sair
-	}
-
-	menu_ok = False
-	while not menu_ok:
-		imprimerMenu()
-		menu = input()
-		try:
-			menu = int(menu)
-			assert (menu > 0 and menu <= 4)
-		except ValueError:
-			print("Voce nao digitou um numero. Tente novamente.")
-		except AssertionError:
-			print("*** Escolha um numero dentre as opçoes ***")
-		else:
-			menu_ok = True
-	
 	dic_politicos = calcularRanking(dic_politicos)
+	sortir = False
 
-	function = dic_menu[menu]
-	sortir = function(dic_politicos)
-	return sortir	
+	if id == -1:
+		print "Politico nao encontrado!"
+	elif id == 0:
+		pass
+	else:
+		imprimirPolitico(id, dic_politicos[id])
+
+
+	while True:
+		dic_menu = {
+			1: buscaPorNome,
+			2: rankingCompleto,
+			3: buscaPorDenuncia,
+			4: sair
+		}
+
+		menu_ok = False
+		while not menu_ok:
+			imprimerMenu()
+			menu = input()
+			try:
+				menu = int(menu)
+				assert (menu > 0 and menu <= 4)
+			except ValueError:
+				print("Voce nao digitou um numero. Tente novamente.")
+			except AssertionError:
+				print("*** Escolha um numero dentre as opçoes ***")
+			else:
+				menu_ok = True
+
+		function = dic_menu[menu]
+		sortir = function(dic_politicos)
+
+		if sortir != False:
+			return sortir	
 
 if __name__ == "__main__":
-	main()
+	consoleMain()
