@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js – The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Social corruption</h1>
+					<i><h4>Ranking de corrupçao baseado em amizades no Twitter</h4></i>
+					<p>
+						<small>Created by:</small><br>
+
+						<small>Hugo A. B. Djemaa - RA 181596 | Gabriel Caê C. Bounous - RA 181493 </small>
+
+					</p>
+				</section>
+
+				<section data-background="#4C1130">
+					<p>
+						Depois da votaçao do impeachment na Camera ha pouco tempo e todos os escandalos de corrupçao que estao no ar, tentamos criar uma ferramenta para vermos a politica de hoje de uma forma mais clara.
+					</p>
+				</section>
+
+				<section>
+					<section data-background="#073763">
+						<h2>Formatação de dados</h2>
+						<h3>Três listas</h3>
+						<a href="#" class="navigate-down"></a>
+					</section>
+
+					<section data-background="#3D85C6">
+						
+						<div style="width: 100%; padding-top: 10%;">
+								<h3>Datas HTML</h3>	
+								<ul>			
+								<li><a href="http://m.congressoemfoco.uol.com.br/noticias/lista-da-odebrecht-os-politicos-e-seus-respectivos-partidos" >Odebrecht</a></li>
+								<li><a href="http://www.contracorrupcao.org/2013/04/lista-da-corrupcao.html?m=1" >Condenados e Acusados</a></li>
+								<li><a href="http://infograficos.oglobo.globo.com/brasil/politicos-lava-jato.html" >Lava Jato</a></li>
+								</ul>
+													
+							</div>
+					</section>
+					<section data-background="#3D85C6">
+							<div style="float:right; width:50%">
+								<h3>Datas CSV</h3>	
+								<a href="https://raw.githubusercontent.com/amaboura/panama-papers-dataset-2016/master/pt.csv" >Panama Papers</a>
+						</div>
+						<a href="#/2"></a>
+					</section>				
+				</section>
+
+				<section>
+					<section data-background="#0C343D">
+						<h2>Saida</h2>
+						<pre><code class="hljs" data-trim contenteditable>
+						Nome,lavaJato,panamaPapers,odebrecht,acusadosCondenados
+EDUARDO CUNHA,1,1,1,0
+CARLOS ALBERTO LEREIA,0,0,0,1
+DUDU   RONALSA,0,0,1,0
+MAMADIE TOURe,0,1,0,0
+TARCISIO   ZIMMERMANN,0,0,1,0
+JEFERSON   ANDRADE,0,0,1,0
+LUIZ GUSHIKEN,0,0,0,1
+FREDERICO   ANTUNES,0,0,1,0
+DARCY   VERA,0,0,1,0
+
+					</code></pre>
+
+					</section>
+					<section data-background="#A2C4C9" data-transition="slide">
+						<h5>Recuperar uma pessoa no twitter</h5>
+						<pre><code class="hljs" data-trim contenteditable>
+def getTwitterUser(query):
+
+	users = OAuth.api.search_users(query)
+	if len(users) > 0:
+		# printTwitterUserJson(users[0]._json)
+		return users[0]._json
+	else:
+		return -1
+
+					</code></pre>
+						<a href="#/3"></a>
+					</section>			
+					<section data-background="#A2C4C9" data-transition="slide">
+						<h5>Recuperar os Amigos no twitter</h5>
+						<pre><code class="hljs" data-trim contenteditable>
+def getTwitterUsersFriends(user_id):
+
+	lista_amigos = OAuth.api.friends_ids(user_id)
+	return lista_amigos		
+
+					</code></pre>
+						<a href="#/3"></a>
+					</section>
+					<section data-background="#0C343D">
+						<h2>Nova Saida</h2>
+						<pre><code class="hljs" data-trim contenteditable>
+						Nome,id,lavaJato,panamaPapers,odebrecht,acusadosCondenados,listaDeAmigos
+EDUARDO CUNHA,15161,1,1,1,0, []
+CARLOS ALBERTO LEREIA,351315131,0,0,0,1, []
+DUDU   RONALSA,1263515131,0,0,1,0 []
+
+
+					</code></pre>
+
+					</section> 		
+						
+				</section>
+
+				<section>
+					<section data-background="#7F6000">
+						<h2>MapReduce with spark</b></h2>
+							<pre><code class="hljs" data-trim contenteditable>
+							def run(sc):
+	corrupted = sc.textFile("dataset/parser/corrupcao.csv").map(split).map(parseAll)
+	listCorrupt = dict(sc.textFile("dataset/parser/corrupcao.csv").map(split).map(parse2).collect())
+	coef  = corrupted.map(lambda f : makeTuple(f,listCorrupt)).collect()
+	result = dict()
+
+def makeTuple(corrupt, listCorrupt):
+    if corrupt is not None:
+        return corrupt.id, coefficient(corrupt,listCorrupt)
+					</code></pre>
+					</section>	
+					<section data-background="#7F6000">
+						<h2>O coefficiente de corrupçao</b></h2>
+							<pre><code class="hljs" data-trim contenteditable>
+def coefficient(corrupt, listCorrupt):
+    coefficient1 = 300
+    coefficient2 = 20
+    coefficient3 = 50
+    numero =0
+    corruption = corrupt.numberList * coefficient1
+    value = corrupt.numberList * 300
+    for amigo in corrupt.listaDeAmigos:
+        if amigo in listCorrupt:
+            corruption+= listCorrupt[amigo]*coefficient2
+            numero += 1
+    if len(corrupt.listaDeAmigos) > 0:
+        coefficient = float(numero)/float(len(corrupt.listaDeAmigos))*100
+    else:
+        coefficient = 0
+    corruption += coefficient*coefficient3
+    return {"nome":corrupt.Nome,"lavaJato":corrupt.lavaJato,"panamaPapers":corrupt.panamaPapers,"odebrecht":corrupt.odebrecht,"acusadosCondenados":corrupt.acusadosCondenados,"numberList":corrupt.numberList,"numeroAmigos":len(corrupt.listaDeAmigos),"numeroAmigosSujos":numero,"coefficientAmigosSujos":coefficient,"coefficientCorruption":corruption}
+
+					</code></pre>
+					</section>	
+					
+				</section>
+
+				<section data-background="#783F04">
+					<h3>Prática</h3>
+				</section>
+
+				<section data-background="#660000">
+					<ul>
+						<li><a href="https://github.com/gcbounous/corrupcao_spark">https://github.com/gcbounous/corrupcao_spark</a></li>
+						<li><a href="http://spark.apache.org/">SPARK</a></li>
+						<li><a href="https://districtdatalabs.silvrback.com/getting-started-with-spark-in-python">https://districtdatalabs.silvrback.com/getting-started-with-spark-in-python</a></li>
+					</ul>
+				</section>
+
+				<section style="text-align: left;" data-background="./clap.gif">
+					<h1>Fim</h1>
+					<p>
+						- <a href="http://slides.com">Try the online editor</a> <br>
+						- <a href="https://github.com/hakimel/reveal.js">Source code &amp; documentation</a>
+					</p>
+				</section>
+
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
